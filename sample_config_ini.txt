@@ -1,0 +1,19 @@
+[general]
+token = Your secret token
+enable_auto_update = True
+udp_port = 8080
+udp_broadcast_port = 8090
+udp_enabled = True
+
+[media]
+photo = Downloads/Photo/
+video = Downloads/Video/
+document = Downloads/Document/
+audio = Downloads/Audio/
+others = Downloads/
+
+[update]
+repository_url = https://github.com/hasanmutlu/hasobot
+update_file_url = https://github.com/hasanmutlu/hasobot/archive/master.zip
+current_version = 6
+

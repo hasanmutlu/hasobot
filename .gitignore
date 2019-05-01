@@ -1,0 +1,12 @@
+Files/Bots/*
+token.txt
+test.py
+__pycache__/
+*.db
+.idea/
+test*.py
+Downloads/*
+*.log
+hsnMain.py
+config.ini
+*.avi
