@@ -6,10 +6,6 @@ import shutil
 import configparser
 import threading
 
-config = configparser.ConfigParser()
-config.read('config.ini')
-_lock = threading.Lock()
-
 
 class Util:
 
@@ -86,3 +82,8 @@ class Util:
             return str(result_code)
         except Exception as e:
             return 'Could not execute command!'
+
+
+config = configparser.ConfigParser()
+config.read(Util.get_abs_file_name('config.ini'))
+_lock = threading.Lock()
