@@ -4,6 +4,7 @@ enable_auto_update = True
 udp_port = 8080
 udp_broadcast_port = 8090
 udp_enabled = True
+update_interval = 3600
 
 [media]
 photo = Downloads/Photo/

@@ -17,7 +17,10 @@ from Files.Database.TableMaps import UsersTableMap, UsersAccessMode
 class UpdateService(IService):
 
     def __init__(self):
-        super(UpdateService, self).__init__(60 * 60 * 24)
+        update_interval = Util.get_setting('update_interval', cls=int)
+        if update_interval is None:
+            update_interval = 60 * 60 * 24  # check updates daily
+        super(UpdateService, self).__init__(update_interval)
 
     @staticmethod
     def get_server_commit_number():
