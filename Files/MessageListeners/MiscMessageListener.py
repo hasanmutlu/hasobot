@@ -14,6 +14,7 @@ from Files.Database.TableMaps import UsersTableMap, UsersAccessMode
 from Files.Database.Users import check_user, Users
 from Core.IMessageListener import IMessageListener
 from Files.MessageListeners.HelpMessageListener import bot_help
+from Files.Services.UpdateService import UpdateService
 
 
 @singleton
@@ -120,6 +121,10 @@ class MiscMessageListener(IMessageListener):
         reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
         TelegramBotManager().bot.send_message(chat_id=update.message.chat_id, text="Custom Keyboard Test",
                                               reply_markup=reply_markup)
+
+    @staticmethod
+    def handle_update(update: Update):
+        UpdateService.check_and_update()
 
     @staticmethod
     def handle_capture(update: Update):
