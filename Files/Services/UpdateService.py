@@ -70,7 +70,6 @@ class UpdateService(IService):
                         chat_id = admin[UsersTableMap.CHAT_ID]
                         message = 'Bot is updating to new version!'
                         TelegramBotManager.TelegramBotManager().bot.send_message(chat_id=chat_id, text=message)
-
             ServiceManager().stop_services()
             UpdateService.update_program()
             Util.set_setting(server_version, 'current_version', 'update')

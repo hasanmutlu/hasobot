@@ -124,6 +124,7 @@ class MiscMessageListener(IMessageListener):
 
     @staticmethod
     def handle_update(update: Update):
+        # starts updating manually
         UpdateService.check_and_update()
 
     @staticmethod
