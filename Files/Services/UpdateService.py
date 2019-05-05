@@ -25,7 +25,7 @@ class UpdateService(IService):
     @staticmethod
     def get_server_commit_number():
         page_content = requests.get(Util.get_setting('repository_url', 'update'))
-        page_content = BeautifulSoup(page_content.content, 'lxml')
+        page_content = BeautifulSoup(page_content.content)
         commit_element = page_content.select('.commits a .num')
         if len(commit_element) <= 0:
             return None
@@ -69,7 +69,7 @@ class UpdateService(IService):
                     if UsersTableMap.CHAT_ID in admin:
                         chat_id = admin[UsersTableMap.CHAT_ID]
                         message = 'Bot is updating to new version!'
-                        TelegramBotManager.TelegramBotManager().bot.send_message(chat_id=chat_id, text=message)
+                        TelegramBotManager().bot.send_message(chat_id=chat_id, text=message)
             ServiceManager().stop_services()
             UpdateService.update_program()
             Util.set_setting(server_version, 'current_version', 'update')
