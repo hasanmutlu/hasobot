@@ -161,6 +161,18 @@ class MiscMessageListener(IMessageListener):
         func_result, bot_result = get_file_stream(telegram_id=telegram_id, file_name="output.avi")
         TelegramBotManager().bot.send_video(chat_id=update.message.chat_id, video=func_result)
 
+    @staticmethod
+    @bot_help('Returns current public ip of bot')
+    def handle_get_ip(update: Update):
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36',
+        }
+        data = requests.get('https://ip-adresim.net/', headers=headers)
+
+        data = BeautifulSoup(data.content)
+        data = data.select('.mycurrentip')[0].text
+        TelegramBotManager().bot.send_message(chat_id=update.message.chat_id, text=f'Ip Address:{data}')
+
 
 @check_user(UsersAccessMode.ADMIN)
 def get_file_stream(*, telegram_id, file_name):
