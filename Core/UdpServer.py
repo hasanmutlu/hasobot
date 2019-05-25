@@ -16,11 +16,11 @@ class UdpServer(Thread):
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         self.port = Util.get_setting('udp_port', cls=int)
         self.port_bc = Util.get_setting('udp_broadcast_port', cls=int)
-        udp_enabled = Util.get_setting('udp_enabled', cls=bool)
-        if udp_enabled is True and self.port is not None:
-            self.start()
 
-    def start(self):
+    def run(self):
+        udp_enabled = Util.get_setting('udp_enabled', cls=bool)
+        if udp_enabled is False or self.port is None:
+            return
         if self.is_alive():
             print('udp server has been already started!!')
             return

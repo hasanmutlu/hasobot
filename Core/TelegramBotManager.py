@@ -20,11 +20,10 @@ class TelegramBotManager:
         dispatcher.add_handler(command_handler)
         updater.start_polling()
         self.bot: Bot = updater.bot
-        self.send_started_message()
-        self.user_history = {}
         UdpServer().start()
         ServiceManager.load_services()
         ServiceManager.start_services()
+        self.send_started_message()
 
     def send_started_message(self):
         self.send_broadcast_message("Bot is started!", UsersAccessMode.ADMIN)
