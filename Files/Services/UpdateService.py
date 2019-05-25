@@ -38,7 +38,10 @@ class UpdateService(IService):
 
     @staticmethod
     def download_and_extract_update(path):
-        update_zip = requests.get(Util.get_setting('update_file_url', 'update'))
+        file_url = Util.get_setting('repository_url', 'update')
+        branch = Util.get_setting('branch', 'update')
+        file_url = f'{file_url}/archive/{branch}.zip'
+        update_zip = requests.get(file_url)
         if os.path.exists(path) is False:
             os.mkdir(path)
         update_file = open(f'{path}/update.zip', 'wb')

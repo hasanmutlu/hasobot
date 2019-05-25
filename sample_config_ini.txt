@@ -15,6 +15,6 @@ others = Downloads/
 
 [update]
 repository_url = https://github.com/hasanmutlu/hasobot
-update_file_url = https://github.com/hasanmutlu/hasobot/archive/master.zip
+branch = master
 current_version = 6
 
