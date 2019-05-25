@@ -27,10 +27,17 @@ class TelegramBotManager:
         ServiceManager.start_services()
 
     def send_started_message(self):
-        filter_result = BotDatabase().filter(Tables.USERS,
-                                             lambda row: row[UsersTableMap.ACCESS] == UsersAccessMode.ADMIN)
+        self.send_broadcast_message("Bot is started!", UsersAccessMode.ADMIN)
+
+    def send_broadcast_message(self, text, user_access=UsersAccessMode.USER):
+        # send user_access as None to send messages to all users
+        if user_access is None:
+            filter_result = BotDatabase().filter(Tables.USERS)
+        else:
+            filter_result = BotDatabase().filter(Tables.USERS,
+                                                 lambda row: row[UsersTableMap.ACCESS] == user_access)
         if filter_result.count > 0:
-            for admin in filter_result.rows:
-                if UsersTableMap.CHAT_ID in admin:
-                    chat_id = admin[UsersTableMap.CHAT_ID]
-                    self.bot.send_message(chat_id=chat_id, text="Bot has been Started!")
+            for user in filter_result.rows:
+                if UsersTableMap.CHAT_ID in user:
+                    chat_id = user[UsersTableMap.CHAT_ID]
+                    self.bot.send_message(chat_id=chat_id, text=text)

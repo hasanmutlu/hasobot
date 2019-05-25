@@ -43,11 +43,12 @@ class Database:
         return item in self.__tables__
 
     # filters given table's data according with given function
-    def filter(self, table_name: str, func):
+    # TODO: performance will be optimezed for None option
+    def filter(self, table_name: str, func=None):
         _result = FilterResult()
         try:
             table = self[table_name]
-            _result.indexes = [i for i in range(0, len(table)) if func(table[i]) is True]
+            _result.indexes = [i for i in range(0, len(table)) if func is None or func(table[i]) is True]
             _result.rows = [table[i] for i in _result.indexes]
             _result.count = len(_result.indexes)
         except Exception as e:
