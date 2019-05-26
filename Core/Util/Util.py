@@ -48,14 +48,14 @@ class Util:
                     shutil.copy2(s, d)
 
     @staticmethod
-    def get_setting(name, section='general', cls=str):
+    def get_setting(name, section='general', cls=str, default=None):
         try:
             data = config[section][name]
             data = cls(data)
             return data
         except Exception as e:
             logging.error(f'Error:{e}')
-            return None
+            return default
 
     @staticmethod
     def save_settings():
