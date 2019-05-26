@@ -21,12 +21,6 @@ class UdpServer(Thread):
         udp_enabled = Util.get_setting('udp_enabled', cls=bool)
         if udp_enabled is False or self.port is None:
             return
-        if self.is_alive():
-            print('udp server has been already started!!')
-            return
-        if self.port is None:
-            print('Udp server port is not defined!!!')
-            return
         self.socket.settimeout(10)
         self.socket.bind(('', self.port))
         while True:
