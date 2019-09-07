@@ -51,7 +51,10 @@ class Util:
     def get_setting(name, section='general', cls=str, default=None):
         try:
             data = config[section][name]
-            data = cls(data)
+            if cls == bool:
+                data = (data == 'True')
+            else:
+                data = cls(data)
             return data
         except Exception as e:
             logging.error(f'Error:{e}')
