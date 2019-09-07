@@ -1,3 +1,4 @@
+import logging
 from threading import Thread, Event
 
 """
@@ -20,9 +21,12 @@ class IService(Thread):
 
     def run(self):
         while True:
-            self.run_service()
-            if self.__interval__ is None or self.__is_stopped__.wait(self.__interval__):
-                break
+            try:
+                self.run_service()
+                if self.__interval__ is None or self.__is_stopped__.wait(self.__interval__):
+                    break
+            except Exception as e:
+                logging.error(str(e))
 
     def run_service(self):
         raise NotImplementedError()
