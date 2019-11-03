@@ -1,10 +1,10 @@
+import logging
+
 from Core import TelegramBotManager
 from threading import Thread
 import socket
-
 from Core.Util.Util import Util
-from Files.Database.BotDatabase import BotDatabase, Tables
-from Files.Database.TableMaps import UsersTableMap, UsersAccessMode
+from Files.Database.UserTableManager import UserAccessMode
 
 
 class UdpServer(Thread):
@@ -36,12 +36,7 @@ class UdpServer(Thread):
             data, address = self.socket.recvfrom(1024)
             message = f'udp package is received from {address} and data is {data}'
             print("Message is", message)
-            filter_result = BotDatabase().filter(Tables.USERS,
-                                                 lambda row: row[UsersTableMap.ACCESS] == UsersAccessMode.ADMIN)
-            if filter_result.count > 0:
-                for admin in filter_result.rows:
-                    if UsersTableMap.CHAT_ID in admin:
-                        chat_id = admin[UsersTableMap.CHAT_ID]
-                        TelegramBotManager.TelegramBotManager().bot.send_message(chat_id=chat_id, text=message)
+            TelegramBotManager.TelegramBotManager().send_broadcast_message(message, UserAccessMode.ADMIN)
         except Exception as e:
+            logging.error(e)
             pass

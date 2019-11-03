@@ -1,6 +1,7 @@
 from sqlite3 import Connection
-from Entities import DbTable
-from Entities.DbTable import Table
+
+from Core.DbManager import DbTable
+from Core.DbManager.DbTable import Table
 
 
 class ITableManager:
@@ -24,9 +25,6 @@ class ITableManager:
             create_query = table.get_create_table_query()
             self.connection.execute(create_query)
         self.connection.commit()
-
-    def update_tables(self):
-        raise NotImplementedError
 
     def record_is_exist(self, table_name: str, field: str, value):
         if table_name in self.tables is False:
@@ -56,4 +54,13 @@ class ITableManager:
         sql, parameter_list = self.tables[table_name].get_insert_query(data)
         cursor = self.connection.cursor()
         cursor.execute(sql, parameter_list)
+        self.connection.commit()
+        return cursor.lastrowid
+
+    def update_data(self, table_name, data, filter_field: str, filter_field_value):
+        # data can be a dictionary or Object
+        sql, parameter_list = self.tables[table_name].get_update_query(data, filter_field, filter_field_value)
+        cursor = self.connection.cursor()
+        cursor.execute(sql, parameter_list)
+        self.connection.commit()
         return cursor.lastrowid

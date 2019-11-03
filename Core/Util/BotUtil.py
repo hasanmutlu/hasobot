@@ -1,5 +1,5 @@
 from telegram import Update
-from Files.Database.TableMaps import UsersTableMap, UsersAccessMode
+from Files.Database.UserTableManager import UserAccessMode
 
 
 class BotUtil:
@@ -24,10 +24,9 @@ class BotUtil:
 
     @staticmethod
     def get_user_data(update: Update):
-        _result = {UsersTableMap.TELEGRAM_ID: update.message.from_user.id,
-                   UsersTableMap.FIRST_NAME: update.message.from_user.first_name,
-                   UsersTableMap.LAST_NAME: update.message.from_user.last_name,
-                   UsersTableMap.IS_BOT: update.message.from_user.is_bot,
-                   UsersTableMap.CHAT_ID: update.message.chat_id,
-                   UsersTableMap.ACCESS: UsersAccessMode.USER}
+        _result = {"telegram_id": update.message.from_user.id,
+                   "first_name": update.message.from_user.first_name,
+                   "last_name": update.message.from_user.last_name,
+                   "chat_id": update.message.chat_id,
+                   "access": UserAccessMode.BOT if update.message.from_user.is_bot else UserAccessMode.USER}
         return _result

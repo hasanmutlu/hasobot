@@ -1,18 +1,16 @@
-import time
 import pyttsx3
 import requests
 import telegram
 from bs4 import BeautifulSoup
-from telegram import Update, Bot
+from telegram import Update
 
 from Core.Decorators import singleton
 from Core.TelegramBotManager import TelegramBotManager
 from Core.Util.BotUtil import BotUtil
 from Core.Util.Util import Util
-from Files.Database.BotDatabase import BotDatabase
-from Files.Database.TableMaps import UsersTableMap, UsersAccessMode
-from Files.Database.Users import check_user, Users
 from Core.IMessageListener import IMessageListener
+from Files.Database.DatabaseManager import DatabaseManager, check_user_access
+from Files.Database.UserTableManager import UserAccessMode
 from Files.MessageListeners.HelpMessageListener import bot_help
 from Files.Services.UpdateService import UpdateService
 
@@ -43,15 +41,14 @@ class MiscMessageListener(IMessageListener):
     @staticmethod
     def handle_register(update: Update):
         telegram_id = BotUtil.get_telegram_id(update)
-        if Users.is_user_exist(telegram_id) is False:
+        if DatabaseManager().userTableManager.record_is_exist("Users", "telegram_id", telegram_id) is False:
             message = "You are new user"
             _user = BotUtil.get_user_data(update)
-            Users.add_new_user(_user)
-            BotDatabase().save()
+            DatabaseManager().userTableManager.insert_data("Users", _user)
         else:
-            _user = Users.get_user(telegram_id)
-            message = "Welcome back {0} {1}!!".format(_user[UsersTableMap.FIRST_NAME],
-                                                      _user[UsersTableMap.LAST_NAME])
+            _user = DatabaseManager().userTableManager.select("Users", {"telegram_id": telegram_id})[0]
+            message = "Welcome back {0} {1}!!".format(_user.first_name,
+                                                      _user.last_name)
         TelegramBotManager().bot.send_message(chat_id=update.message.chat_id, text=message)
 
     @staticmethod
@@ -128,40 +125,6 @@ class MiscMessageListener(IMessageListener):
         UpdateService.check_and_update()
 
     @staticmethod
-    def handle_capture(update: Update):
-        # Define the duration (in seconds) of the video capture here
-        capture_duration = 10
-
-        cap = cv2.VideoCapture(0)
-
-        # Define the codec and create VideoWriter object
-        fourcc = cv2.VideoWriter_fourcc(*'XVID')
-        out = cv2.VideoWriter('output.avi', fourcc, 30.0, (640, 480))
-
-        start_time = time.time()
-        while (int(time.time() - start_time) < capture_duration):
-            ret, frame = cap.read()
-            if ret == True:
-                frame = cv2.flip(frame, 0)
-
-                # write the flipped frame
-                out.write(frame)
-
-                cv2.imshow('frame', frame)
-                # if cv2.waitKey(1) & 0xFF == ord('q'):
-                #    break
-            else:
-                break
-
-        # Release everything if job is finished
-        cap.release()
-        out.release()
-        cv2.destroyAllWindows()
-        telegram_id = BotUtil.get_telegram_id(update)
-        func_result, bot_result = get_file_stream(telegram_id=telegram_id, file_name="output.avi")
-        TelegramBotManager().bot.send_video(chat_id=update.message.chat_id, video=func_result)
-
-    @staticmethod
     @bot_help('Returns current public ip of bot')
     def handle_get_ip(update: Update):
         headers = {
@@ -174,12 +137,12 @@ class MiscMessageListener(IMessageListener):
         TelegramBotManager().bot.send_message(chat_id=update.message.chat_id, text=f'Ip Address:{data}')
 
 
-@check_user(UsersAccessMode.ADMIN)
+@check_user_access(UserAccessMode.ADMIN)
 def get_file_stream(*, telegram_id, file_name):
     return open(file_name, 'rb')
 
 
-@check_user(UsersAccessMode.ADMIN)
+@check_user_access(UserAccessMode.ADMIN)
 def exec_cmd_bot(*, telegram_id, command):
     res, output, error = Util.execute(command)
     if len(output) == 0:
@@ -187,21 +150,21 @@ def exec_cmd_bot(*, telegram_id, command):
     return output
 
 
-@check_user(UsersAccessMode.ADMIN)
+@check_user_access(UserAccessMode.ADMIN)
 def reboot_bot(*, telegram_id):
     Util.execute("reboot")
 
 
-@check_user(UsersAccessMode.ADMIN)
+@check_user_access(UserAccessMode.ADMIN)
 def shutdown_bot(*, telegram_id):
     Util.execute("shutdown now -h")
 
 
-@check_user(UsersAccessMode.ADMIN)
+@check_user_access(UserAccessMode.ADMIN)
 def exec_python(*, telegram_id, cmd):
     exec(cmd)
 
 
-@check_user(UsersAccessMode.ADMIN)
+@check_user_access(UserAccessMode.ADMIN)
 def speak_bot(*, telegram_id, text):
     MiscMessageListener().speak(text)

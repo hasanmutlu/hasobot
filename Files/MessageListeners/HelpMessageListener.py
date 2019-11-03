@@ -1,6 +1,6 @@
 import functools
 
-from telegram import Update, Bot
+from telegram import Update
 
 from Core.Decorators import singleton
 from Core.IMessageListener import IMessageListener

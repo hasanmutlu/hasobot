@@ -1,5 +1,4 @@
-import Util
-from Util import Object
+from Core.Util.Util import Util, Object
 
 
 class Field:
@@ -68,6 +67,16 @@ class Table:
         if len(field_list) > 0:
             parameters_str = ','.join('?' * len(field_list))
             result = f"INSERT INTO {self.name}({','.join(field_list)}) VALUES({parameters_str});"
+            return result, parameter_list
+        else:
+            raise RuntimeError('Given Data is not suitable!')
+
+    def get_update_query(self, data: Object, filter_field, filter_value):
+        field_list = [field.name for field in self.attributes if field.is_primary_key is False and field.name in data]
+        parameter_list = [data[field] for field in field_list]
+        if len(field_list) > 0:
+            result = f"UPDATE {self.name} SET{' = ?,'.join(field_list)} WHERE {filter_field} = ?;"
+            parameter_list.append(filter_value)
             return result, parameter_list
         else:
             raise RuntimeError('Given Data is not suitable!')

@@ -2,6 +2,9 @@ import os
 import logging
 from Core.Util.Util import Util
 from Core.TelegramBotManager import TelegramBotManager
+import atexit
+
+from Files.Database import DatabaseManager
 
 if __name__ == '__main__':
     try:
@@ -11,6 +14,11 @@ if __name__ == '__main__':
         logging.basicConfig(filename=Util.get_abs_file_name("hasobot.log"),
                             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                             level=logging.INFO)
-        TelegramBotManager().initialize()
+        TelegramBotManager().initialize()  # initialize bot and start
     except Exception as e:
         logging.error(str(e))
+
+
+@atexit.register
+def on_exit():
+    DatabaseManager.DatabaseManager().close()

@@ -86,6 +86,26 @@ class Util:
         except Exception as e:
             return 'Could not execute command!'
 
+    @staticmethod
+    def check_list_type(_list: [], _type: type):
+        check_list = [type(x) == _type for x in _list]
+        return check_list.count(True) == len(_list)
+
+
+class Object(dict):
+
+    def __getattr__(self, item):
+        if self.__contains__(item) is True:
+            return self.__getitem__(item)
+        else:
+            return None
+
+    def __setattr__(self, key, value):
+        return super(Object, self).__setitem__(key, value)
+
+    def __init__(self):
+        super(Object, self).__init__()
+
 
 config = configparser.ConfigParser()
 config.read(Util.get_abs_file_name('config.ini'))

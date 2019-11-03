@@ -7,7 +7,7 @@ class ImportUtil:
     @staticmethod
     def import_class_by_file_name(file_name: str):
         folder_path = os.path.dirname(file_name)
-        base_name = os.path.basename(file_name)
+        base_name = str(os.path.basename(file_name))
         class_name: str = base_name.split(".")[0]
         module_name = class_name
         if folder_path != '':

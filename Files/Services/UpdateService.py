@@ -10,8 +10,7 @@ from Core.IService import IService
 from Core.ServiceManager import ServiceManager
 from Core.TelegramBotManager import TelegramBotManager
 from Core.Util.Util import Util
-from Files.Database.BotDatabase import BotDatabase, Tables
-from Files.Database.TableMaps import UsersTableMap, UsersAccessMode
+from Files.Database.UserTableManager import UserAccessMode
 
 
 class UpdateService(IService):
@@ -65,14 +64,7 @@ class UpdateService(IService):
         server_version = UpdateService.get_server_commit_number()
         current_version = Util.get_setting('current_version', 'update', int)
         if server_version != current_version:
-            filter_result = BotDatabase().filter(Tables.USERS,
-                                                 lambda row: row[UsersTableMap.ACCESS] == UsersAccessMode.ADMIN)
-            if filter_result.count > 0:
-                for admin in filter_result.rows:
-                    if UsersTableMap.CHAT_ID in admin:
-                        chat_id = admin[UsersTableMap.CHAT_ID]
-                        message = 'Bot is updating to new version!'
-                        TelegramBotManager().bot.send_message(chat_id=chat_id, text=message)
+            TelegramBotManager().send_broadcast_message('Bot is updating to new version!', UserAccessMode.ADMIN)
             ServiceManager().stop_services()
             UpdateService.update_program()
             Util.set_setting(server_version, 'current_version', 'update')

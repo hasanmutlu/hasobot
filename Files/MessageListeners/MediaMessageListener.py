@@ -1,6 +1,5 @@
 import io
 import os
-import subprocess
 from telegram import Update, Bot
 
 from Core.TelegramBotManager import TelegramBotManager

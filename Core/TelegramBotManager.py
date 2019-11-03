@@ -2,16 +2,17 @@ import logging
 
 from telegram import Bot
 from telegram.ext import Updater, MessageHandler, Filters
-from Core.Decorators import singleton
+
+from Core import Decorators
 from Core.ServiceManager import ServiceManager
 from Core.UdpServer import UdpServer
 from Core.Util.Util import Util
-from Files.Database.BotDatabase import BotDatabase, Tables
-from Files.Database.TableMaps import UsersTableMap, UsersAccessMode
 from Core.MessageManager import MessageManager
+from Files.Database.DatabaseManager import DatabaseManager
+from Files.Database.UserTableManager import UserAccessMode
 
 
-@singleton
+@Decorators.singleton
 class TelegramBotManager:
     def initialize(self):
         token = Util.get_setting('token')
@@ -28,20 +29,18 @@ class TelegramBotManager:
         self.send_started_message()
 
     def send_started_message(self):
-        self.send_broadcast_message("Bot is started!", UsersAccessMode.ADMIN)
+        self.send_broadcast_message("Bot is started!", UserAccessMode.ADMIN)
 
-    def send_broadcast_message(self, text, user_access=UsersAccessMode.USER):
+    def send_broadcast_message(self, text, user_access=UserAccessMode.USER):
         try:
             # send user_access as None to send messages to all users
             if user_access is None:
-                filter_result = BotDatabase().filter(Tables.USERS)
+                filter_result = DatabaseManager().userTableManager.select("Users")
             else:
-                filter_result = BotDatabase().filter(Tables.USERS,
-                                                     lambda row: row[UsersTableMap.ACCESS] == user_access)
-            if filter_result.count > 0:
-                for user in filter_result.rows:
-                    if UsersTableMap.CHAT_ID in user:
-                        chat_id = user[UsersTableMap.CHAT_ID]
-                        self.bot.send_message(chat_id=chat_id, text=text)
+                filter_result = DatabaseManager().userTableManager.select("Users", {"access": user_access})
+            if len(filter_result) > 0:
+                for user in filter_result:
+                    if user.chat_id != 0:
+                        self.bot.send_message(chat_id=user.chat_id, text=text)
         except Exception as e:
             logging.error(str(e))
