@@ -84,7 +84,10 @@ class MiscMessageListener(IMessageListener):
     def handle_exec(update: Update):
         telegram_id = BotUtil.get_telegram_id(update)
         command = BotUtil.get_message_arguments(update)
-        func_result, bot_result = exec_cmd_bot(telegram_id=telegram_id, command=command)
+        try:
+            func_result, bot_result = exec_cmd_bot(telegram_id=telegram_id, command=command)
+        except Exception as e:
+            print(e)
         TelegramBotManager().bot.send_message(chat_id=update.message.chat_id, text=func_result)
 
     @staticmethod

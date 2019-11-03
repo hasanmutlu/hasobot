@@ -28,8 +28,8 @@ def check_user_access(user_access):
                 return None, message
             else:
                 telegram_id = kwargs["telegram_id"]
-                filter_result = DatabaseManager.DatabaseManager().userTableManager.select("Users", {"telegram_id": telegram_id})
-                if filter_result.count() > 0:
+                filter_result = DatabaseManager().userTableManager.select("Users", {"telegram_id": telegram_id})
+                if len(filter_result) > 0:
                     user = filter_result[0]
                     if user.access == user_access:
                         result = func(*args, **kwargs)
